@@ -10,7 +10,6 @@ console.log(ctx);
 // ctx.stroke();    // TO REPRESENT LINE
 // ctx.closePath()     // END OF THE LINE
 
-
 // making of ball
 
 let ballX = canvas.width / 2 ;
@@ -27,8 +26,7 @@ function drawball(){
  ctx.strokeStyle = "black";
  ctx.closePath();
 }
-drawball();
-
+// drawball();
 
 // making of paddle
 
@@ -47,8 +45,7 @@ function drawpaddle(){
     ctx.stroke();
     ctx.closePath();
 }
-drawpaddle();
-
+// drawpaddle();
 
 // making of bricks
 
@@ -67,7 +64,7 @@ for(let c = 0; c < brickColoumnCount; c++){
         bricks[c][r] = {x: 0 , y:0};
     }
 }
-console.log(bricks);
+// console.log(bricks);
 
 function drawnbricks(){
     for(let c=0 ; c < brickColoumnCount ; c++){
@@ -85,14 +82,35 @@ function drawnbricks(){
         }
     }
 }
-drawnbricks();
-
+// drawnbricks();
 
 function drawScore(){
     ctx.font = "16px arial";
     ctx.fillStyle = "Blue";
     ctx.fillText("score : 0", 800 , 20);
 }
-drawScore();
+// drawScore();
 
-document.addEventListener("keydown" , handlekey)
+document.addEventListener("keydown" , handlekey);
+document.addEventListener("keyup" , handlekey);
+
+function handlekey(e){
+    console.log(e);
+    console.log(e.key);
+
+    if(e.key == "ArrowLeft"){
+        console.log("left");
+        paddleX -= paddleSpeed;
+    }else if(e.key == "ArrowRight"){
+        console.log("Right");
+        paddleX += paddleSpeed;
+    }
+}
+function gameStart(){
+    drawball();
+    drawpaddle();
+    drawnbricks();
+    drawScore();
+    requestAnimationFrame(gameStart);
+}
+gameStart()
