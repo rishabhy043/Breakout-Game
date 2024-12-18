@@ -114,7 +114,12 @@ function gameStart(){
 
     ballX += ballSpeedX;
     ballY += balllspeedY;
-
+    if(ballY + ballRadius > canvas.height){
+        ballSpeedX += -ballSpeedX;
+    }
+    if(ballX + ballRadius > canvas.width || ballX - ballRadius < 0){
+        ballSpeedX = - ballSpeedX;
+    }
     requestAnimationFrame(gameStart);
 }
 gameStart()
