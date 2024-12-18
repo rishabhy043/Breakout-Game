@@ -101,7 +101,7 @@ function handlekey(e){
     if(e.key == "ArrowLeft"){
         console.log("left");
         paddleX -= paddleSpeed;
-    }else if(e.key == "ArrowRight"){
+    }else if(e.key == "ArrowRight" && paddleX + canvas.width < canvas.width){
         console.log("Right");
         paddleX += paddleSpeed;
     }
@@ -111,6 +111,10 @@ function gameStart(){
     drawpaddle();
     drawnbricks();
     drawScore();
+
+    ballX += ballSpeedX;
+    ballY += balllspeedY;
+
     requestAnimationFrame(gameStart);
 }
 gameStart()
