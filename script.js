@@ -2,7 +2,9 @@ const canvas = document.querySelector("canvas");
 const breakout = document.querySelector("#breakout");
 const ctx = canvas.getContext("2d");
 console.log(ctx);
-
+console.log(canvas.width);
+console.log(canvas.height);
+let score = 0;
 
 // ctx.beginPath();   //  STARTING FROM HERE
 // ctx.moveTo(0,0);       // MOVE TO FROM
@@ -15,15 +17,15 @@ console.log(ctx);
 let ballX = canvas.width / 2 ;
 let ballY = canvas.height / 2 ;
 let ballRadius = 10;
-let ballSpeedX = 5;
-let balllspeedY = 5;
+let ballSpeedX = 2;
+let ballSpeedY = 2;
 
 function drawball(){
  ctx.beginPath();
  ctx.fillStyle = "blue";
  ctx.arc(ballX , ballY , ballRadius , 0 , Math.PI * 2);
  ctx.fill();
- ctx.strokeStyle = "black";
+ ctx.strokeStyle = "blue";
  ctx.closePath();
 }
 // drawball();
@@ -61,7 +63,7 @@ let bricks = [];
 for(let c = 0; c < brickColoumnCount; c++){
     bricks[c] = [];
     for(let r = 0; r < brickRowCount; r++){
-        bricks[c][r] = {x: 0 , y:0};
+        bricks[c][r] = {x: 0 , y:0 , alive:1};
     }
 }
 // console.log(bricks);
@@ -69,16 +71,33 @@ for(let c = 0; c < brickColoumnCount; c++){
 function drawnbricks(){
     for(let c=0 ; c < brickColoumnCount ; c++){
         for(let r=0 ; r < brickRowCount ; r++){
-            let brickX =(c *(brickWidth + brickpadding)) + marginFromleft;
-            let bricky = (r *(brickHeight + brickpadding)) + marginFromTop;
-            console.log(brickX , bricky);
-            bricks[c][r].x = brickX;
-            bricks[c][r].y = bricky; 
-            ctx.beginPath();
-            ctx.rect(brickX , bricky , brickWidth , brickHeight);
-            ctx.fillStyle = "blue";
-            ctx.fill();
-            ctx.strokeStyle = "blue"
+            if(bricks[c][r].alive == 1){
+                let brickx =(c *(brickWidth + brickpadding)) + marginFromleft;
+                let bricky = (r *(brickHeight + brickpadding)) + marginFromTop;
+                console.log(brickx , bricky);
+                bricks[c][r].x = brickx;
+                bricks[c][r].y = bricky; 
+                ctx.beginPath();
+                ctx.rect(brickx , bricky , brickWidth , brickHeight);
+                ctx.fillStyle = "blue";
+                ctx.fill();
+                ctx.strokeStyle = "blue"
+            }
+        }
+    }
+}
+
+function detectcollision(){
+    for(let c = 0 ; c < brickColoumnCount ; c++){
+        for(let r = 0 ; r < brickRowCount ; r++){
+            let b = bricks[c][r];
+            if(b.alive == 1){
+                if(ballX > b.x && ballY > b.y && ballX  < b.x + brickWidth && ballY < b.y + brickHeight){
+                  bricks[c][r].alive = 0; 
+                  ballSpeedY = -ballSpeedY;
+                  score++;
+                }
+            }
         }
     }
 }
@@ -87,7 +106,7 @@ function drawnbricks(){
 function drawScore(){
     ctx.font = "16px arial";
     ctx.fillStyle = "Blue";
-    ctx.fillText("score : 0", 800 , 20);
+    ctx.fillText("Score: " + score , 800 , 20);
 }
 // drawScore();
 
@@ -98,27 +117,35 @@ function handlekey(e){
     console.log(e);
     console.log(e.key);
 
-    if(e.key == "ArrowLeft"){
+    if(e.key == "ArrowLeft" && paddleX > 0){
         console.log("left");
         paddleX -= paddleSpeed;
-    }else if(e.key == "ArrowRight" && paddleX + canvas.width < canvas.width){
+    }else if(e.key == "ArrowRight" && paddleX + paddlewidth < canvas.width){
         console.log("Right");
         paddleX += paddleSpeed;
     }
 }
 function gameStart(){
+    ctx.clearRect(0,0,canvas.width , canvas.height);
     drawball();
     drawpaddle();
     drawnbricks();
+    detectcollision();
     drawScore();
 
     ballX += ballSpeedX;
-    ballY += balllspeedY;
+    ballY += ballSpeedY;
+    if(ballY - ballRadius < 0){
+        ballspeedY = - ballSpeedY;
+    }
     if(ballY + ballRadius > canvas.height){
-        ballSpeedX += -ballSpeedX;
+        document.location.reload();
     }
     if(ballX + ballRadius > canvas.width || ballX - ballRadius < 0){
         ballSpeedX = - ballSpeedX;
+    }
+    if(ballX + ballRadius > paddleX && ballY + ballRadius > paddleY && ballX + ballRadius < paddleX +  paddlewidth){
+     ballSpeedY = -ballSpeedY;
     }
     requestAnimationFrame(gameStart);
 }
